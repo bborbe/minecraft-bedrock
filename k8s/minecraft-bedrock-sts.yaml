@@ -1,0 +1,67 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  namespace: minecraft-bedrock
+  name: minecraft-bedrock
+spec:
+  replicas: 1
+  serviceName: minecraft-bedrock
+  selector:
+    matchLabels:
+      app: minecraft-bedrock
+  template:
+    metadata:
+      labels:
+        app: minecraft-bedrock
+    spec:
+      affinity:
+        nodeAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            nodeSelectorTerms:
+              - matchExpressions:
+                  - key: node_type
+                    operator: In
+                    values:
+                      - 'longhorn'
+      containers:
+        - name: service
+          image: bborbe/minecraft-bedrock:2025.4.0
+          imagePullPolicy: Always
+          envFrom:
+            - configMapRef:
+                name: minecraft-bedrock
+          volumeMounts:
+            - mountPath: /data
+              name: datadir
+          ports:
+            - containerPort: 19132
+              protocol: UDP
+          readinessProbe:
+            exec:
+              command:
+                - mc-monitor
+                - status-bedrock
+                - --host
+                # force health check against IPv4 port
+                - 127.0.0.1
+            initialDelaySeconds: 30
+          livenessProbe:
+            exec:
+              command:
+                - mc-monitor
+                - status-bedrock
+                - --host
+                # force health check against IPv4 port
+                - 127.0.0.1
+          tty: true
+          stdin: true
+  volumeClaimTemplates:
+    - metadata:
+        name: datadir
+      spec:
+        storageClassName: longhorn
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 1Gi
