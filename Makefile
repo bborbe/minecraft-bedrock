@@ -1,4 +1,4 @@
-VERSION ?= 2025.4.0
+VERSION ?= 2025.5cd .0
 REGISTRY ?= docker.io
 
 build:

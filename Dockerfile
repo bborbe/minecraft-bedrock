@@ -1,3 +1,3 @@
-ARG VERSION=2025.4.0
+ARG VERSION=2025.5.0
 
 FROM itzg/minecraft-bedrock-server:${VERSION}

@@ -25,7 +25,7 @@ spec:
                       - 'longhorn'
       containers:
         - name: service
-          image: bborbe/minecraft-bedrock:2025.4.0
+          image: bborbe/minecraft-bedrock:2025.5.0
           imagePullPolicy: Always
           envFrom:
             - configMapRef:
